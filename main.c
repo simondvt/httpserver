@@ -20,7 +20,7 @@
 #include "handle_client.h"
 
 #define DEFAULT_ROOT getenv("HOME")
-#define DEFAULT_PORT 6969
+#define DEFAULT_PORT 8080
 
 void sig_int_handler(int sig);
 void print_interface_ip(in_port_t);
