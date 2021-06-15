@@ -1,5 +1,5 @@
 #define _DEFAULT_SOURCE // for NI_MAXHOST, NI_NUMERICHOST, IFF_UP
-#define _GNU_SOURCE     // for secure_getenv
+//#define _GNU_SOURCE     // for secure_getenv
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +24,7 @@
 
 void sig_int_handler(int sig);
 void print_interface_ip(in_port_t);
-int drop_root_privileges(void);
+//int drop_root_privileges(void);
 
 int main(int argc, char **argv)
 {
@@ -142,7 +142,7 @@ void print_interface_ip(in_port_t port) //https://man7.org/linux/man-pages/man3/
 }
 
 // returns 0 on success and -1 on failure
-int drop_root_privileges(void)
+/*int drop_root_privileges(void)
 {
     gid_t gid;
     uid_t uid;
@@ -221,4 +221,4 @@ int drop_root_privileges(void)
     }
 
     return 0;
-}
+}*/
