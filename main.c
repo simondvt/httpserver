@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     in_port_t port = DEFAULT_PORT;
 
     opterr = 0; // don't let getopt print error messages
-    char c_opt;
+    signed char c_opt;
     while ((c_opt = getopt(argc, argv, "r:p:h::")) != -1)
     {
         switch (c_opt)
