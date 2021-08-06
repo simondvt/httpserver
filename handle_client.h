@@ -3,6 +3,8 @@
 #include <netinet/in.h>
 #include <stdbool.h>
 
+#include "macro.h"
+
 struct hc_t
 {
     int client_sfd;
@@ -27,6 +29,7 @@ struct HTTPResponse
     int status_code;
     size_t file_size;
     bool dir;
+    char content_type[STRING_LEN];
 };
 
-void* handle_client(void *hc);
+void *handle_client(void *hc);
