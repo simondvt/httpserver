@@ -133,7 +133,7 @@ void print_interface_ip(in_port_t port) //https://man7.org/linux/man-pages/man3/
             if (getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),
                             host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST) == 0)
             {
-                printf("%-10s\t%s:%d\n", ifa->ifa_name, host, port);
+                printf("%-10s\thttp://%s:%d\n", ifa->ifa_name, host, port);
             }
         }
     }
