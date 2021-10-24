@@ -227,7 +227,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
                 request->path);
 
         fprintf(client_sfd_s, "HTTP/1.0 404 Not Found\r\n");
-        fprintf(client_sfd_s, "Content-Length: %ld\r\n", strlen(msg));
+        fprintf(client_sfd_s, "Content-Length: %zu\r\n", strlen(msg));
         fprintf(client_sfd_s, "Content-Type: text/html\r\n\r\n");
         fprintf(client_sfd_s, "%s", msg);
 
@@ -242,7 +242,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
                 request->path);
 
         fprintf(client_sfd_s, "HTTP/1.0 403 Permission denied\r\n");
-        fprintf(client_sfd_s, "Content-Length: %ld\r\n", strlen(msg));
+        fprintf(client_sfd_s, "Content-Length: %zu\r\n", strlen(msg));
         fprintf(client_sfd_s, "Content-Type: text/html\r\n\r\n");
         fprintf(client_sfd_s, "%s", msg);
 
@@ -294,7 +294,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
 
         fprintf(client_sfd_s, "HTTP/1.0 200 OK\r\n");
         //fprintf(client_sfd_s, "Server: httpserver6969\r\n");
-        fprintf(client_sfd_s, "Content-Length: %ld\r\n", payload_size);
+        fprintf(client_sfd_s, "Content-Length: %zu\r\n", payload_size);
         fprintf(client_sfd_s, "Content-Type: %s\r\n\r\n", content_type);
         fwrite(payload, sizeof(char), payload_size, client_sfd_s);
     }
