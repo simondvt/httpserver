@@ -1,5 +1,5 @@
 #define _DEFAULT_SOURCE // for NI_MAXHOST, NI_NUMERICHOST, IFF_UP
-#define _GNU_SOURCE     // for secure_getenv
+//#define _GNU_SOURCE     // for secure_getenv
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +12,8 @@
 #include <sys/stat.h>
 #include <netdb.h>
 #include <ifaddrs.h>
-#include <net/if.h>
+//#include <net/if.h>
+#include <linux/if.h>
 #include <pthread.h>
 #include <getopt.h>
 
@@ -24,7 +25,7 @@
 
 void sig_int_handler(int sig);
 void print_interface_ip(in_port_t);
-int drop_root_privileges(void);
+//int drop_root_privileges(void);
 
 int main(int argc, char **argv)
 {
@@ -32,7 +33,7 @@ int main(int argc, char **argv)
     in_port_t port = DEFAULT_PORT;
 
     opterr = 0; // don't let getopt print error messages
-    char c_opt;
+    signed char c_opt;
     while ((c_opt = getopt(argc, argv, "r:p:h::")) != -1)
     {
         switch (c_opt)
@@ -127,11 +128,13 @@ void print_interface_ip(in_port_t port) //https://man7.org/linux/man-pages/man3/
         if (ifa->ifa_addr == NULL)
             continue;
 
-        if ((ifa->ifa_flags & IFF_UP) && (ifa->ifa_addr->sa_family == AF_INET))
+        if ((ifa->ifa_flags & IFF_UP) && (ifa->ifa_flags & IFF_LOWER_UP) && (ifa->ifa_addr->sa_family == AF_INET))
         {
             if (getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),
                             host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST) == 0)
-                printf("%-10s\t%s:%d\n", ifa->ifa_name, host, port);
+            {
+                printf("%-10s\thttp://%s:%d\n", ifa->ifa_name, host, port);
+            }
         }
     }
 
@@ -142,7 +145,7 @@ void print_interface_ip(in_port_t port) //https://man7.org/linux/man-pages/man3/
 }
 
 // returns 0 on success and -1 on failure
-int drop_root_privileges(void)
+/*int drop_root_privileges(void)
 {
     gid_t gid;
     uid_t uid;
@@ -221,4 +224,4 @@ int drop_root_privileges(void)
     }
 
     return 0;
-}
+}*/

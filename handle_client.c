@@ -63,11 +63,16 @@ void *handle_client(void *hc)
 
     //printf("User-Agent: %s\n", request->user_agent);
     char *timestamp = get_timestamp();
+    char file_type[STRING_LEN] = "\0";
+
+    if (!response->dir)
+        sprintf(file_type, "file [%.1016s]", response->content_type);
+
     switch (response->status_code)
     {
     case 200:
         printf("[%s] | %s:%d | sending %s [%s] %ld bytes\n", timestamp, client_ip, client_port,
-               response->dir ? "dir" : "file", request->path, response->file_size);
+               response->dir ? "dir" : file_type, request->path, response->file_size);
         break;
     case 403:
         printf("[%s] | %s:%d | %s [%s] 403 Permission Denied\n", timestamp, client_ip, client_port,
@@ -291,6 +296,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
 
         response->status_code = 200;
         response->file_size = payload_size;
+        strcpy(response->content_type, content_type);
 
         fprintf(client_sfd_s, "HTTP/1.0 200 OK\r\n");
         //fprintf(client_sfd_s, "Server: httpserver6969\r\n");
