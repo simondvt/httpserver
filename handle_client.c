@@ -255,7 +255,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
     }
     else
     {
-        char content_type[STRING_LEN];
+        char content_type[STRING_LEN] = {'\0'};
         size_t payload_size;
 
         if (S_ISDIR(file_info.st_mode)) // directory
