@@ -135,7 +135,7 @@ struct HTTPRequest *parse_request(int client_sfd)
             request->user_agent = malloc((strlen(piece) + 1) * sizeof(*request->user_agent));
             strcpy(request->user_agent, piece);
         }
-        // aggiungere qui if (!strcmp(piece, "CAMPO:")) e poi leggerlo
+        // add here(!strcmp(piece, "FIELD:"))
 
         buf = buf ? buf + 1 : NULL;
     }
@@ -220,7 +220,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
     CHECK_ERRNO(client_sfd_s = fdopen(dup(client_sfd), "w"));
 
     int access_errno;
-    errno = 0; // in release mode errno non è settato a 0 prima della chiamata
+    errno = 0;
     CHECK_ERRNO(access(request->path, R_OK));
     access_errno = errno;
 
@@ -299,7 +299,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
         strcpy(response->content_type, content_type);
 
         fprintf(client_sfd_s, "HTTP/1.0 200 OK\r\n");
-        //fprintf(client_sfd_s, "Server: httpserver6969\r\n");
+        //fprintf(client_sfd_s, "Server: httpserver\r\n");
         fprintf(client_sfd_s, "Content-Length: %zu\r\n", payload_size);
         fprintf(client_sfd_s, "Content-Type: %s\r\n\r\n", content_type);
         fwrite(payload, sizeof(char), payload_size, client_sfd_s);
@@ -344,7 +344,7 @@ void sock_write(int fd, const void *buf, size_t count)
     } while ((size_t)bytes_sent < count);
 }
 
-bool path_sanitize(char *path) // TODO: farla bene
+bool path_sanitize(char *path) // TODO: do it right
 {
     return strstr(path, "..") != NULL;
 }
@@ -375,7 +375,7 @@ char *generate_index_html(const char *path, size_t *file_size)
     {
         strcpy(file, dir->d_name);
 
-        if (buf - buffer > (long int)buffer_len - STRING_LEN) // FIXME: STRING_LEN arbitrario, se una path di un file è più lunga ho problemi
+        if (buf - buffer > (long int)buffer_len - STRING_LEN) // FIXME: arbitrary STRING_LEN
         {
             buffer_len *= 2;
             size_t offset = buf - buffer;

@@ -85,7 +85,6 @@ int main(int argc, char **argv)
         fprintf(stderr, "Cannot use port %d, you must be superuser.\n", port);
         exit(EXIT_FAILURE);
     }
-    // FIXME: non riesco a distinguire tra root e sudo
     //drop_root_privileges(); // if user run program with sudo to bind a well known port
 
     CHECK_ERRNO(listen(listen_sfd, LISTEN_BACKLOG));
@@ -104,7 +103,7 @@ int main(int argc, char **argv)
         int client_sfd;
         CHECK_ERRNO(client_sfd = accept(listen_sfd, (struct sockaddr *)&client_sa, &client_sa_len));
 
-        pthread_create(&thread, NULL, handle_client, &(struct hc_t){client_sfd, client_sa, root_dir}); // FIXME: se creo il thread come detached, funziona solo se la root dir è "/"
+        pthread_create(&thread, NULL, handle_client, &(struct hc_t){client_sfd, client_sa, root_dir}); // FIXME: if I create the thread as detached, it works only if root dir is "/"
         pthread_detach(thread);
     }
 }
