@@ -12,7 +12,6 @@
 #include <sys/stat.h>
 #include <netdb.h>
 #include <ifaddrs.h>
-//#include <net/if.h>
 #include <linux/if.h>
 #include <pthread.h>
 #include <getopt.h>
