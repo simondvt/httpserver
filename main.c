@@ -1,5 +1,5 @@
 #define _DEFAULT_SOURCE // for NI_MAXHOST, NI_NUMERICHOST, IFF_UP
-//#define _GNU_SOURCE     // for secure_getenv
+#define _GNU_SOURCE     // for secure_getenv
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@
 #include "macro.h"
 #include "handle_client.h"
 
-#define DEFAULT_ROOT getenv("HOME")
+#define DEFAULT_ROOT get_current_dir_name()
 #define DEFAULT_PORT 8080
 
 void sig_int_handler(int sig);
