@@ -19,16 +19,17 @@
 #include "macro.h"
 #include "handle_client.h"
 
-#define DEFAULT_ROOT get_current_dir_name()
 #define DEFAULT_PORT 8080
 
 void sig_int_handler(int sig);
 void print_interface_ip(in_port_t);
-//int drop_root_privileges(void);
+// int drop_root_privileges(void);
 
 int main(int argc, char **argv)
 {
-    char *root_dir = DEFAULT_ROOT;
+    char default_root_dir[STRING_LEN];
+    getcwd(default_root_dir, STRING_LEN);
+    char *root_dir = default_root_dir;
     in_port_t port = DEFAULT_PORT;
 
     opterr = 0; // don't let getopt print error messages
@@ -84,7 +85,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Cannot use port %d, you must be superuser.\n", port);
         exit(EXIT_FAILURE);
     }
-    //drop_root_privileges(); // if user run program with sudo to bind a well known port
+    // drop_root_privileges(); // if user run program with sudo to bind a well known port
 
     CHECK_ERRNO(listen(listen_sfd, LISTEN_BACKLOG));
 
@@ -92,8 +93,8 @@ int main(int argc, char **argv)
     print_interface_ip(port);
 
     pthread_t thread;
-    //pthread_attr_t thread_attr;
-    //pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+    // pthread_attr_t thread_attr;
+    // pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
 
     for (;;)
     {
@@ -114,7 +115,7 @@ void sig_int_handler(int sig)
     exit(EXIT_SUCCESS);
 }
 
-void print_interface_ip(in_port_t port) //https://man7.org/linux/man-pages/man3/getifaddrs.3.html
+void print_interface_ip(in_port_t port) // https://man7.org/linux/man-pages/man3/getifaddrs.3.html
 {
     struct ifaddrs *ifaddr, *ifa;
     char *host = malloc(NI_MAXHOST * sizeof(*host));
