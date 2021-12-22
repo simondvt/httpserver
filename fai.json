@@ -1,0 +1,51 @@
+{
+    "name": "httpserver",
+    "standard": "c99",
+    "compiler": "gcc",
+    "num_threads": 0, // 0 means hardware concurrency
+    "source_dir": ".",
+    "include_dirs": [
+        "include"
+    ],
+    "build_dir": ".",
+    "common_flags": [
+        "-pipe",
+    ],
+    "common_defines": [],
+    "pkgconfig_libs": [],
+    "other_options": [],
+    "libs": ["pthread"],
+    "configurations": [
+        {
+            "name": "debug",
+            "defines": [
+                //"_FORTIFY_SOURCE=2",
+                "DEBUG"
+            ],
+            "flags": [
+                "-Wall",
+                "-Wextra",
+                "-Winit-self",
+                "-Wuninitialized",
+                "-Wformat=2",
+                "-g3",
+                "-fasynchronous-unwind-tables",
+                "-O0",
+                "-fstack-protector-all",
+                "-fsanitize=address",
+                //"-fsanitize=thread",
+                "-fsanitize=undefined",
+
+            ]
+        },
+        {
+            "name": "release",
+            "defines": [],
+            "flags": [
+                "-O3",
+                "-march=native",
+                "-mtune=native"
+            ]
+        }
+    ]
+}

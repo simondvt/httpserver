@@ -43,7 +43,6 @@ void *handle_client(void *hc)
     struct HTTPRequest *request = parse_request(client_sfd);
     if (request == NULL)
     {
-        CHECK_ERRNO(freeHTTPRequest(request));
         return NULL;
     }
 
@@ -61,7 +60,7 @@ void *handle_client(void *hc)
         printf("into default\n");
     }
 
-    //printf("User-Agent: %s\n", request->user_agent);
+    // printf("User-Agent: %s\n", request->user_agent);
     char *timestamp = get_timestamp();
     char file_type[STRING_LEN] = "\0";
 
@@ -88,7 +87,7 @@ void *handle_client(void *hc)
                response->status_code);
     }
 
-    CHECK_ERRNO(free(timestamp));
+    free(timestamp);
     freeHTTPRequest(request);
     freeHTTPResponse(response);
 
@@ -265,10 +264,10 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
             payload = generate_index_html(request->path, &payload_size);
             if (payload == NULL)
             {
-                //fprintf(client_sfd_s, "HTTP/1.1 200 OK\r\n");
-                //fprintf(client_sfd_s, "Content-Type: text/html\r\n\r\n");
-                //fprintf(client_sfd_s, "<h1>Can't generate directory index</h1>\r\n");
-                //fprintf(client_sfd_s, "<b>\"%s\"</b> fail\r\n\r\n", request->path);
+                // fprintf(client_sfd_s, "HTTP/1.1 200 OK\r\n");
+                // fprintf(client_sfd_s, "Content-Type: text/html\r\n\r\n");
+                // fprintf(client_sfd_s, "<h1>Can't generate directory index</h1>\r\n");
+                // fprintf(client_sfd_s, "<b>\"%s\"</b> fail\r\n\r\n", request->path);
                 fprintf(stderr, "generate_index_html ha ritornato payload = NULL\n\n");
             }
             else
@@ -299,7 +298,7 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
         strcpy(response->content_type, content_type);
 
         fprintf(client_sfd_s, "HTTP/1.0 200 OK\r\n");
-        //fprintf(client_sfd_s, "Server: httpserver\r\n");
+        // fprintf(client_sfd_s, "Server: httpserver\r\n");
         fprintf(client_sfd_s, "Content-Length: %zu\r\n", payload_size);
         fprintf(client_sfd_s, "Content-Type: %s\r\n\r\n", content_type);
         fwrite(payload, sizeof(char), payload_size, client_sfd_s);

@@ -93,8 +93,6 @@ int main(int argc, char **argv)
     print_interface_ip(port);
 
     pthread_t thread;
-    // pthread_attr_t thread_attr;
-    // pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
 
     for (;;)
     {
@@ -103,8 +101,14 @@ int main(int argc, char **argv)
         int client_sfd;
         CHECK_ERRNO(client_sfd = accept(listen_sfd, (struct sockaddr *)&client_sa, &client_sa_len));
 
-        pthread_create(&thread, NULL, handle_client, &(struct hc_t){client_sfd, client_sa, root_dir}); // FIXME: if I create the thread as detached, it works only if root dir is "/"
-        pthread_detach(thread);
+        struct hc_t *hc = malloc(sizeof(*hc));
+        hc->client_sfd = client_sfd;
+        hc->client_sa = client_sa;
+        hc->root_path = root_dir;
+        pthread_attr_t thread_attr;
+        pthread_attr_init(&thread_attr);
+        pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+        pthread_create(&thread, &thread_attr, handle_client, hc);
     }
 }
 
