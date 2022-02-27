@@ -27,6 +27,15 @@ char *get_timestamp(void);
 char *generate_index_html(const char *path, size_t *file_size);
 void sock_write(int fd, const void *buf, size_t count); // writes until finished
 bool path_sanitize(char *path);
+const char *get_filename_ext(const char *filename);
+
+const char *get_filename_ext(const char *filename)
+{
+    const char *dot = strrchr(filename, '.');
+    if (!dot || dot == filename)
+        return "";
+    return dot + 1;
+}
 
 void *handle_client(void *hc)
 {
@@ -87,6 +96,7 @@ void *handle_client(void *hc)
                response->status_code);
     }
 
+    free(hc);
     free(timestamp);
     freeHTTPRequest(request);
     freeHTTPResponse(response);
@@ -283,11 +293,20 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
             CHECK_ERRNO(fread(payload, sizeof(char), file_info.st_size, payload_s));
             CHECK_ERRNO(fclose(payload_s));
 
-            char cmd[STRING_LEN];
-            sprintf(cmd, "file %s --mime-type | cut -d \' \' -f 2", request->path);
-            CHECK_ERRNO(pipe_file_cmd = popen(cmd, "r"));
-            fscanf(pipe_file_cmd, "%s", content_type);
-            CHECK_ERRNO(pclose(pipe_file_cmd));
+            const char *file_ext = get_filename_ext(request->path);
+
+            if (!strcmp(file_ext, "css"))
+                strcpy(content_type, "text/css");
+            else if (!strcmp(file_ext, "js"))
+                strcpy(content_type, "application/javascript");
+            else
+            {
+                char cmd[STRING_LEN];
+                sprintf(cmd, "file %s --mime-type | cut -d \' \' -f 2", request->path);
+                CHECK_ERRNO(pipe_file_cmd = popen(cmd, "r"));
+                fscanf(pipe_file_cmd, "%s", content_type);
+                CHECK_ERRNO(pclose(pipe_file_cmd));
+            }
 
             payload_size = file_info.st_size;
             response->dir = false;
@@ -365,7 +384,9 @@ char *generate_index_html(const char *path, size_t *file_size)
     char *buf = buffer;
     int bytes_buf;
     bytes_buf = sprintf(buf, "<html>\n<head><title>%s</title></head>\n<body>\n"
-                             "<center><h1>%s</h1></center><br/>\n",
+                             "<center><h1>%s</h1></center><br/>\n"
+                             "<table>\n"
+                             "<tbody>\n",
                         path, path);
     buf += bytes_buf;
 
@@ -385,13 +406,32 @@ char *generate_index_html(const char *path, size_t *file_size)
         if (dir->d_type == DT_DIR) // if is a directory
             strcat(file, "/");
 
-        bytes_buf = sprintf(buf, "<a href=\"%s\">%s</a><br/>\n", file, file);
+        bytes_buf = sprintf(buf, "<tr><td style=\"border: 0\"><a href=\"%s\">%s</a></td>", file, file);
+        buf += bytes_buf;
+
+        if (dir->d_type != DT_DIR)
+        {
+            struct stat st;
+            CHECK_ERRNO(stat(file, &st));
+
+            off_t size = st.st_size;
+            struct timespec mtime = st.st_mtim;
+            struct tm tm;
+            gmtime_r(&mtime.tv_sec, &tm);
+            char time_str[64];
+            strftime(time_str, 64, "%Y-%m-%d %H:%M:%S", &tm);
+
+            bytes_buf = sprintf(buf, "<td style=\"border: 0\">%s</td><td style=\"border: 0\">%ld bytes</td>", time_str, size);
+            buf += bytes_buf;
+        }
+
+        bytes_buf = sprintf(buf, "</tr></br>\n");
         buf += bytes_buf;
 
         CHECK_ERRNO(dir = readdir(directory_path));
     }
 
-    sprintf(buf, "</body></html>");
+    sprintf(buf, "</tbody>\n</body></html>");
 
     CHECK_ERRNO(closedir(directory_path));
 
