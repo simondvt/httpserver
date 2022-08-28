@@ -20,6 +20,7 @@ debug: $(OBJECTS)
 release:
 	make clean
 	$(CC) $(SOURCES) -o $(PROG_NAME) $(RELEASE_FLAGS) $(LIBS)
+	@strip --strip-all $(PROG_NAME)
 
 
 clean:

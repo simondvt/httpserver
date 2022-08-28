@@ -301,11 +301,17 @@ struct HTTPResponse *http_get(int client_sfd, struct HTTPRequest *request)
                 strcpy(content_type, "application/javascript");
             else
             {
-                char cmd[STRING_LEN];
-                sprintf(cmd, "file %s --mime-type | cut -d \' \' -f 2", request->path);
-                CHECK_ERRNO(pipe_file_cmd = popen(cmd, "r"));
-                fscanf(pipe_file_cmd, "%s", content_type);
-                CHECK_ERRNO(pclose(pipe_file_cmd));
+                // check if request->path extension is xpi
+                if (strcmp(get_filename_ext(request->path), "xpi") == 0)
+                    strcpy(content_type, "application/x-xpinstall");
+                else
+                {
+                    char cmd[STRING_LEN];
+                    sprintf(cmd, "file %s --mime-type | cut -d \' \' -f 2", request->path);
+                    CHECK_ERRNO(pipe_file_cmd = popen(cmd, "r"));
+                    fscanf(pipe_file_cmd, "%s", content_type);
+                    CHECK_ERRNO(pclose(pipe_file_cmd));
+                }
             }
 
             payload_size = file_info.st_size;
