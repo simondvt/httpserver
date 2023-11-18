@@ -67,14 +67,14 @@ int main(int argc, char **argv)
 
     CHECK_ERRNO(signal(SIGINT, sig_int_handler));
 
-    struct sockaddr_in server_sa;
+    struct sockaddr_in6 server_sa;
     memset(&server_sa, 0, sizeof(server_sa));
-    server_sa.sin_family = AF_INET;
-    server_sa.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_sa.sin_port = htons(port);
+    server_sa.sin6_family = AF_INET6;
+    server_sa.sin6_addr = in6addr_any;
+    server_sa.sin6_port = htons(port);
 
     int listen_sfd;
-    CHECK_ERRNO(listen_sfd = socket(AF_INET, SOCK_STREAM, 0));
+    CHECK_ERRNO(listen_sfd = socket(AF_INET6, SOCK_STREAM, 0));
     CHECK_ERRNO(setsockopt(listen_sfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)));
 
     int bind_errno = errno = 0;
