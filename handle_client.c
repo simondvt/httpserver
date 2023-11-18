@@ -40,13 +40,13 @@ const char *get_filename_ext(const char *filename)
 void *handle_client(void *hc)
 {
     int client_sfd = ((struct hc_t *)hc)->client_sfd;
-    struct sockaddr_in client_sa = ((struct hc_t *)hc)->client_sa;
+    struct sockaddr_in6 client_sa = ((struct hc_t *)hc)->client_sa;
     char *root_path = ((struct hc_t *)hc)->root_path;
 
     // get ip and port of client
-    char client_ip[INET_ADDRSTRLEN];
-    unsigned short client_port = ntohs(client_sa.sin_port);
-    CHECK_ERRNO(inet_ntop(AF_INET, (struct sockaddr *)&(client_sa.sin_addr), client_ip, sizeof(client_ip)));
+    char client_ip[INET6_ADDRSTRLEN];
+    unsigned short client_port = ntohs(client_sa.sin6_port);
+    CHECK_ERRNO(inet_ntop(AF_INET6, (struct sockaddr_in6 *)&(client_sa.sin6_addr), client_ip, sizeof(client_ip)));
 
     // parse request
     struct HTTPRequest *request = parse_request(client_sfd);

@@ -8,7 +8,7 @@
 struct hc_t
 {
     int client_sfd;
-    struct sockaddr_in client_sa;
+    struct sockaddr_in6 client_sa;
     char *root_path;
 };
 

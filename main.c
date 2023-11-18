@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 
     for (;;)
     {
-        struct sockaddr_in client_sa;
+        struct sockaddr_in6 client_sa;
         socklen_t client_sa_len = sizeof(client_sa);
         int client_sfd;
         CHECK_ERRNO(client_sfd = accept(listen_sfd, (struct sockaddr *)&client_sa, &client_sa_len));
